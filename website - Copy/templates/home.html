@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hospitals</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    .hospital-block {
+      background-color: #ffffff;
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      padding: 20px;
+      margin-bottom: 20px;
+      position: relative;
+      width: 1000px;
+    }
+
+    .hospital-title {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .btn-go {
+      background-color: #ffc107;
+      color: #000;
+      border: none;
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+    }
+    .btn-goo {
+      background-color: #43e949;
+      color: #000;
+      border: none;
+      margin-right: 2rem;
+    }
+    .btn-go:hover {
+      background-color: #ffca28;
+      color: #000;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Hospital A</h1>
+    <hr>
+    <a href="{{url_for('doctor_loginform')}}" ><button type="button" >Doctor Login</button></a>
+    <div class="col-md-6">
+      <div class="hospital-block">
+        <div class="hospital-title">Doctor 1</div>
+          {% if condition %}
+            <button type="button" class="btn btn-goo" > available</button>
+            <a href="{{url_for('appointments')}}" > <button type="button" class="btn btn-go" >Book</button></a>
+          {% else %}
+            <button type="button" class="btn btn-go" >Not available</button>
+          {% endif %}
+        
+      </div>
+    </div>
+
+    <!-- <div class="col-md-6">
+      <div class="hospital-block">
+        <div class="hospital-title">KG Hospital</div>
+        <button type="button" class="btn btn-go">GO</button>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="hospital-block">
+        <div class="hospital-title">Apollo Hospital</div>
+        <button type="button" class="btn btn-go">GO</button>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="hospital-block">
+        <div class="hospital-title">Menachi Mission Hospital</div>
+        <button type="button" class="btn btn-go">GO</button>
+      </div>
+    </div> -->
+  </div>
+
+  <!-- Bootstrap JS -->
+  
+</body>
+
+</html>
