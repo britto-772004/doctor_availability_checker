@@ -4,12 +4,7 @@ import sqlite3
 from datetime import datetime,timedelta
 
 
-
-
-
 app = Flask(__name__)
-
-
 
  
 @app.route('/')
@@ -107,8 +102,8 @@ def doctor_loginform():
 def doctor_dashboard():
     connection = sqlite3.connect("appointment.db")
     cursor = connection.cursor()
-    query = "select * from Appointments where doctor = ?"
-    cursor.execute(query, ("doctor_1",))
+    query = "select * from Appointments where time > ?"
+    cursor.execute(query, (datetime.now(),))
     result = cursor.fetchall()
     cursor.close()
     connection.close()
@@ -120,6 +115,7 @@ def doctor_dashboard():
 @app.route('/appointments')
 def appointments():
     if is_table_exists_appointmentdb("Appointments"):
+        print("inside selection appointments")
         conn = sqlite3.connect("appointment.db")
         cursor = conn.cursor()
         query = "select appno from Appointments ORDER BY appno DESC LIMIT 1"
@@ -130,34 +126,42 @@ def appointments():
         query = "select time from Appointments ORDER BY time DESC LIMIT 1"
         cursor.execute(query)
         time = cursor.fetchone() 
-        current_time_str = time[0]  
-        current_datetime = datetime.strptime(current_time_str, '%H:%M')
-        new_datetime = current_datetime + timedelta(minutes=15)
-        apptime = new_datetime.strftime('%H:%M')
+        date_string_intable = time[0]#select the last encountered time 
+        current_datetime = datetime.now()
+        date_string = current_datetime.strftime('%Y-%m-%d %H:%M:%S.%f')
+        date_time_obj = datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S.%f')
+        # last_app_time = date_time_obj.time()
+        # current_time = datetime.now().time()
+        delta = timedelta(minutes=15)
+        new_date_time_obj = date_time_obj + delta
+        apptime = new_date_time_obj.time()
+        # new_date_string = new_date_time_obj.strftime('%Y-%m-%d %H:%M:%S.%f')
 
         return render_template("appointment.html",appno = appno , apptime = apptime)
+    
+    
     else:
-            connection = sqlite3.connect("appointment.db")
-            cursor = connection.cursor()
-            query = "Create table Appointments(appno int primary key,doctor varchar(50),name varchar(25), age int, weight int, symptom varchar(300),time varchar(20) );"
-            cursor.execute(query)
+        print("inside create appointment")
+        connection = sqlite3.connect("appointment.db")
+        cursor = connection.cursor()
+        query = "Create table Appointments(appno int primary key,doctor varchar(50),name varchar(25), age int, weight int, symptom varchar(300),time DATETIME DEFAULT CURRENT_TIMESTAMP)"
+        cursor.execute(query)
 
 
-            query = "insert into Appointments(appno,doctor,name,age,weight,symptom,time) values (0,'-','-',0,0,'-','18:00') "
-            cursor.execute(query)
-            connection.commit()
-            cursor.close()
-            connection.close()
-            return redirect(url_for('appointments'))
+        query = "insert into Appointments(appno,doctor,name,age,weight,symptom,time) values(?,?,?,?,?,?,?) "
+        value = (0,"-","-",0,0,"-",datetime.now())
+        cursor.execute(query,value)
+        connection.commit()
+        cursor.close()
+        connection.close()
+        return redirect(url_for('appointments'))
 
 
 
 @app.route('/appointments_patient', methods = ['GET', 'POST'])
 def appointments_patient():
     if request.method == 'POST':
-        print("before hi")
         if (is_table_exists_appointmentdb("Appointments") == True):
-            print("hi")
             name = request.form['name']
             age = int(request.form['age'])
             weight = int(request.form['weight'])
@@ -172,18 +176,21 @@ def appointments_patient():
             query = "select time from Appointments ORDER BY time DESC LIMIT 1"
             cursor.execute(query)
             last_app_time = cursor.fetchone()
+            date_string = last_app_time[0]
+        
+            date_time_obj = datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S.%f')
+            delta = timedelta(minutes=15)
+            new_date_time_obj = date_time_obj + delta
+            new_date_string = new_date_time_obj.strftime('%Y-%m-%d %H:%M:%S.%f')
 
             if last_appno :
                 appno = int(last_appno[0] + 1)
                 
-                current_time_str = last_app_time[0]  
-                current_datetime = datetime.strptime(current_time_str, '%H:%M')
-                new_datetime = current_datetime + timedelta(minutes=15)
-                app_time = new_datetime.strftime('%H:%M')
+                
 
                 if appno <= 10:
                     query = "insert into Appointments(appno,doctor,name,age,weight,symptom,time) values(?,?,?,?,?,?,?)"
-                    cursor.execute(query,(appno,doctor,name,age,weight,symptom,app_time))
+                    cursor.execute(query,(appno,doctor,name,age,weight,symptom,new_date_string))
                     print("Before commit")
                     connection.commit()
                     cursor.close()
