@@ -1,19 +1,43 @@
 from flask import Flask, render_template, url_for ,redirect, request
-import json
+import subprocess
 import sqlite3
+import re
 from datetime import datetime,timedelta
 
 
 app = Flask(__name__)
 
- 
+
+
+def run_another_python_file():
+    # Replace 'script.py' with the name of the Python file you want to run
+    process = subprocess.Popen(['python', 'client.py'], stdout=subprocess.PIPE)
+    output, _ = process.communicate()
+    return output.decode('utf-8').strip()
+
+# Call the function to run the other Python script
+
+
+
+
+
 @app.route('/')
 def home():
     #fetch data from the google sheet
+    result = run_another_python_file()
+    print("result",result)
+    elements = re.findall(r"'([^']*)'", result)
+
+# Create a new list with the extracted elements
+    result_list = elements[0:]
     condition = False
-    if():
+    # print("after extraction", element1)
+    print(result_list)
+    print(result_list[0])
+    if( result_list[0]== 'YES'):
         condition = True
-    return render_template('home.html',condition = True)
+    print(condition)
+    return render_template('home.html',condition = condition)
 
 
 def is_table_exists(table_name):
@@ -232,9 +256,9 @@ def myappointments():
 #for check up 
 @app.route("/hi")
 def summa():
-    connection = sqlite3.connect("appointment.db")
+    connection = sqlite3.connect("database.db")
     cursor = connection.cursor()
-    query = "select * from Appointments"
+    query = "select * from DoctorStatus"
     cursor.execute(query)
     result = cursor.fetchall()
     print(result)
