@@ -100,6 +100,7 @@ def doctor_loginform():
 
 @app.route('/doctor_dashboard')
 def doctor_dashboard():
+    print("inside doctor_dashboard")
     connection = sqlite3.connect("appointment.db")
     cursor = connection.cursor()
     query = "select * from Appointments where time > ?"
@@ -175,13 +176,21 @@ def appointments_patient():
 
             query = "select time from Appointments ORDER BY time DESC LIMIT 1"
             cursor.execute(query)
-            last_app_time = cursor.fetchone()
+            last_app_time = cursor.fetchone()#last time in database
             date_string = last_app_time[0]
-        
+
+            #app_date_time_obj = datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S.%f')
+            # delta = timedelta(minutes=15)
+            # new_date_time_obj = date_time_obj + delta
+            # new_date_string = new_date_time_obj.strftime('%Y-%m-%d %H:%M:%S.%f')  
+
+            current_datetime = datetime.now()
+            date_string = current_datetime.strftime('%Y-%m-%d %H:%M:%S.%f')
             date_time_obj = datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S.%f')
+            
             delta = timedelta(minutes=15)
             new_date_time_obj = date_time_obj + delta
-            new_date_string = new_date_time_obj.strftime('%Y-%m-%d %H:%M:%S.%f')
+            
 
             if last_appno :
                 appno = int(last_appno[0] + 1)
@@ -190,7 +199,7 @@ def appointments_patient():
 
                 if appno <= 10:
                     query = "insert into Appointments(appno,doctor,name,age,weight,symptom,time) values(?,?,?,?,?,?,?)"
-                    cursor.execute(query,(appno,doctor,name,age,weight,symptom,new_date_string))
+                    cursor.execute(query,(appno,doctor,name,age,weight,symptom,new_date_time_obj))
                     print("Before commit")
                     connection.commit()
                     cursor.close()
