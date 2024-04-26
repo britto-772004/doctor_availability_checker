@@ -13,11 +13,7 @@ def home():
     condition = False
     if():
         condition = True
-    return render_template('home.html',condition = True
-    
-    
-    
-    )
+    return render_template('home.html',condition = True)
 
 
 def is_table_exists(table_name):
