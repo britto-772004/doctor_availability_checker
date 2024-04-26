@@ -10,7 +10,14 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     #fetch data from the google sheet
-    return render_template('home.html',condition = True)
+    condition = False
+    if():
+        condition = True
+    return render_template('home.html',condition = True
+    
+    
+    
+    )
 
 
 def is_table_exists(table_name):
@@ -185,21 +192,19 @@ def appointments_patient():
             # new_date_string = new_date_time_obj.strftime('%Y-%m-%d %H:%M:%S.%f')  
 
             current_datetime = datetime.now()
-            date_string = current_datetime.strftime('%Y-%m-%d %H:%M:%S.%f')
+            date_string = current_datetime.strftime('%Y-%m-%d %H:%M:%S.%f')#string
             date_time_obj = datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S.%f')
             
             delta = timedelta(minutes=15)
-            new_date_time_obj = date_time_obj + delta
+            last_appnotime = date_time_obj + delta
             
 
             if last_appno :
                 appno = int(last_appno[0] + 1)
                 
-                
-
                 if appno <= 10:
                     query = "insert into Appointments(appno,doctor,name,age,weight,symptom,time) values(?,?,?,?,?,?,?)"
-                    cursor.execute(query,(appno,doctor,name,age,weight,symptom,new_date_time_obj))
+                    cursor.execute(query,(appno,doctor,name,age,weight,symptom,last_appnotime))
                     print("Before commit")
                     connection.commit()
                     cursor.close()
